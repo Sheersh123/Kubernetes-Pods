@@ -1,40 +1,37 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  labels:
-    app: nginx
-spec:
-  ports:
-  - port: 80
-    name: web
-  clusterIP: None
-  selector:
-    app: nginx
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: web
 spec:
+  serviceName: web         
+  replicas: 3
   selector:
     matchLabels:
-      app: nginx # has to match .spec.template.metadata.labels
-  serviceName: "nginx"
-  replicas: 3 # by default is 1
-  minReadySeconds: 10 # by default is 0
+      app: web
   template:
     metadata:
       labels:
-        app: nginx # has to match .spec.selector.matchLabels
+        app: web
     spec:
-      terminationGracePeriodSeconds: 10
+      initContainers:
+      - name: init-page
+        image: busybox:1.36
+        command:
+          - sh
+          - -c
+          - |
+            if [ ! -f /usr/share/nginx/html/index.html ]; then
+              echo "Hello from $(hostname)" > /usr/share/nginx/html/index.html
+              date >> /usr/share/nginx/html/index.html
+            fi
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html
       containers:
       - name: nginx
-        image: registry.k8s.io/nginx-slim:0.24
+        image: nginx:1.25-alpine
         ports:
         - containerPort: 80
-          name: web
         volumeMounts:
         - name: www
           mountPath: /usr/share/nginx/html
@@ -42,8 +39,14 @@ spec:
   - metadata:
       name: www
     spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "my-storage-class"
+      accessModes: ["ReadWriteOnce"] 
+      # other modes: ReadOnlyMany / ReadWriteMany
       resources:
         requests:
-          storage: 1Gi
+          storage: 100Mi
+
+
+#  to test:
+#  kubectl run curl --rm -it --image=curlimages/curl --restart=Never -- sh
+# one line cmd to modify web-0 by exec : 
+# kubectl exec -it web-0 -- sh -c 'echo "Appended at $(date)" >> /usr/share/nginx/html/index.html && tail -n 2 /usr/share/nginx/html/index.html'
