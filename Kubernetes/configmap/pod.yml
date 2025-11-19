@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-pod
+spec:
+  containers:
+  - name: demo
+    image: busybox
+    command: [ "sh" , "-c", "echo App mode: $APP_MODE`` ; echo App port: $APP_PORT; sleep 3600" ]
+    envFrom:
+    - configMapRef:
+        name: app-config
