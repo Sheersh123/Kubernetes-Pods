@@ -9,4 +9,6 @@ spec:
     command: [ "sh" , "-c", "echo App mode: $APP_MODE`` ; echo App port: $APP_PORT; sleep 3600" ]
     envFrom:
     - configMapRef:
-        name: app-config
+        name: myapp-config
+
+#  to test: apply the file and check logs for the pod created here should display the env var 
