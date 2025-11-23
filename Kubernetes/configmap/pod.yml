@@ -10,5 +10,3 @@ spec:
     envFrom:
     - configMapRef:
         name: myapp-config
-
-#  to test: apply the file and check logs for the pod created here should display the env var 
