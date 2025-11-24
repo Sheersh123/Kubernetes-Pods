@@ -8,7 +8,11 @@ spec:
       storage: 200Mi
   accessModes:
     - ReadWriteOnce
+<<<<<<< HEAD
   
   
 
 ### Dynamic-Provising
+=======
+  storageClassName: ""
+>>>>>>> 799d28dbf01e6af2d5da5d2df62a9490f4520e34
