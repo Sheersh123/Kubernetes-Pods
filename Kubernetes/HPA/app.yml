@@ -16,25 +16,13 @@ spec:
       containers:
       - name: burner
         image: busybox:1.36
-        command: ["sh", "-c","yes > dev/null" ]
+        command: ["sh", "-c","yes > dev/null & sleep=0.2; done" ]
         resources:
           requests:
-            cpu: "50m"
+            cpu: "200m"
             memory: "32Mi"
           limits:
             cpu: "500m"
             memory: "120Mi"  
 
-# kubectl apply -f php-apache.yaml
-# kubectl expose deploy php-apache --port=80 --target-port=80
-# kubectl autoscale deployment php-apache --cpu-percent=50 --min=1 --max=10
-# kubectl get hpa
 
-# load testing command: 
-# kubectl run -i --tty load-generator --rm --image=busybox:1.28 --restart=Never -- /bin/sh -c "while sleep 0.01; do wget -q -O- http://php-apache; done"
-
-
-# in another terminal: 
-# kubectl get hpa php-apache --watch
-# kubectl get deploy php-apache --watch
-# kubectl top pods
