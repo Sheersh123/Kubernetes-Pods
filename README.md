@@ -1,250 +1,247 @@
 # Kubernetes-Pods
 
-![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![YAML](https://img.shields.io/badge/yaml-%23ffffff.svg?style=for-the-badge&logo=yaml&logoColor=151515)
-
-A comprehensive collection of Kubernetes configuration files and manifests for learning and practicing Kubernetes concepts. This repository demonstrates hands-on experience with container orchestration, including Pods, ConfigMaps, Persistent Volume Claims (PVCs), Services, and StatefulSets.
-
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [Repository Structure](#repository-structure)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Components](#components)
-- [Usage Examples](#usage-examples)
-- [Learning Objectives](#learning-objectives)
-- [Contributing](#contributing)
-- [License](#license)
-
-## 🎯 Overview
-
-This repository contains practical Kubernetes YAML manifests organized by functionality. Each component demonstrates real-world use cases and best practices for deploying applications on Kubernetes.
-
-**Key Features:**
-- Production-ready YAML configurations
-- Organized by Kubernetes resource types
-- Hands-on examples for learning
-- Best practices implementation
-- Ready to deploy on Minikube or any K8s cluster
-
-## 📁 Repository Structure
-
-```
-Kubernetes-Pods/
-├── Kubernetes/
-│   ├── configmap/          # ConfigMap configurations
-│   ├── pvc/                # Persistent Volume Claims
-│   ├── service.demo/       # Service definitions
-│   └── statefulset/        # StatefulSet manifests
-└── README.md
-```
-
-### Components Breakdown:
-
-- **configmap/**: Configuration data management for applications
-- **pvc/**: Storage management using Persistent Volume Claims
-- **service.demo/**: Service networking and load balancing
-- **statefulset/**: Stateful application deployments
-
-## ⚙️ Prerequisites
-
-Before you begin, ensure you have the following installed:
-
-- **Kubernetes Cluster**: Minikube, Kind, or any K8s cluster
-- **kubectl**: Kubernetes command-line tool
-- **Docker**: Container runtime (for Minikube)
-
-### Installation Links:
-
-```bash
-# Install kubectl
-curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-
-# Install Minikube
-curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-sudo install minikube-linux-amd64 /usr/local/bin/minikube
-
-# Start Minikube
-minikube start
-```
-
-## 🚀 Getting Started
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/Sheersh123/Kubernetes-Pods.git
-cd Kubernetes-Pods
-```
-
-### 2. Verify Cluster Connection
-
-```bash
-kubectl cluster-info
-kubectl get nodes
-```
-
-### 3. Navigate to Specific Component
-
-```bash
-cd Kubernetes/<component-name>
-```
-
-## 🔧 Components
-
-### ConfigMaps
-
-ConfigMaps allow you to decouple configuration artifacts from container images.
-
-```bash
-cd Kubernetes/configmap
-kubectl apply -f <configmap-file>.yaml
-kubectl get configmaps
-```
-
-**Use Cases:**
-- Application configuration
-- Environment variables
-- Command-line arguments
-
-### Persistent Volume Claims (PVC)
-
-PVCs provide persistent storage for stateful applications.
-
-```bash
-cd Kubernetes/pvc
-kubectl apply -f <pvc-file>.yaml
-kubectl get pvc
-kubectl get pv
-```
-
-**Use Cases:**
-- Database storage
-- File uploads
-- Application state persistence
-
-### Services
-
-Services enable network access to pods and load balancing.
-
-```bash
-cd Kubernetes/service.demo
-kubectl apply -f <service-file>.yaml
-kubectl get services
-```
-
-**Service Types:**
-- ClusterIP (default)
-- NodePort
-- LoadBalancer
-
-### StatefulSets
-
-StatefulSets manage stateful applications with stable network identities.
-
-```bash
-cd Kubernetes/statefulset
-kubectl apply -f <statefulset-file>.yaml
-kubectl get statefulsets
-kubectl get pods
-```
-
-**Use Cases:**
-- Databases (MySQL, MongoDB, PostgreSQL)
-- Message queues (Kafka, RabbitMQ)
-- Distributed systems requiring stable identities
-
-## 💡 Usage Examples
-
-### Deploy All Resources
-
-```bash
-# Apply all configurations
-kubectl apply -f Kubernetes/ --recursive
-
-# Verify deployments
-kubectl get all
-```
-
-### Check Resource Status
-
-```bash
-# View pods
-kubectl get pods -o wide
-
-# View services
-kubectl get svc
-
-# Describe a resource
-kubectl describe pod <pod-name>
-
-# View logs
-kubectl logs <pod-name>
-```
-
-### Clean Up Resources
-
-```bash
-# Delete specific resource
-kubectl delete -f <file>.yaml
-
-# Delete all resources in directory
-kubectl delete -f Kubernetes/ --recursive
-```
-
-## 📚 Learning Objectives
-
-By working with this repository, you will learn:
-
-✅ **Kubernetes Fundamentals**
-- Pod lifecycle management
-- Resource configuration with YAML
-- Kubernetes object model
-
-✅ **Configuration Management**
-- Using ConfigMaps for application config
-- Managing secrets (best practices)
-- Environment variable injection
-
-✅ **Storage Management**
-- Understanding Persistent Volumes
-- Working with Persistent Volume Claims
-- Storage classes and provisioning
-
-✅ **Networking**
-- Service types and their use cases
-- Service discovery
-- Load balancing strategies
-
-✅ **Stateful Applications**
-- StatefulSet vs Deployment
-- Stable network identities
-- Ordered deployment and scaling
-
-## 🤝 Contributing
-
-Contributions are welcome! If you'd like to improve this repository:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/improvement`)
-3. Commit your changes (`git commit -m 'Add some improvement'`)
-4. Push to the branch (`git push origin feature/improvement`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 📧 Contact
-
-**Sheersh Tiwari**
-- GitHub: [@Sheersh123](https://github.com/Sheersh123)
-- Repository: [Kubernetes-Pods](https://github.com/Sheersh123/Kubernetes-Pods)
+A curated collection of Kubernetes manifests, examples, and learning experiments focused on Pods and basic workload primitives. This repository is intended for developers and learners who want hands-on examples to learn how Pods, Deployments, Services, and basic networking behave in Kubernetes.
+
+Contents include:
+- simple Pod manifests for single-container workloads
+- Deployments and ReplicaSets showing rolling updates and scaling
+- Service examples (ClusterIP, NodePort, LoadBalancer)
+- Practical tips for debugging (kubectl exec, logs, port-forward)
+- Scripts and helper manifests used for demonstrations
 
 ---
 
-⭐ If you found this repository helpful, please consider giving it a star!
+Table of Contents
+- [Overview](#overview)
+- [Repository layout](#repository-layout)
+- [Prerequisites](#prerequisites)
+- [Quick start examples](#quick-start-examples)
+  - [Create a simple Pod](#create-a-simple-pod)
+  - [Create a Deployment and scale](#create-a-deployment-and-scale)
+  - [Expose a Deployment with a Service](#expose-a-deployment-with-a-service)
+- [Debugging & common commands](#debugging--common-commands)
+- [Best practices & notes](#best-practices--notes)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-**Tags:** `kubernetes` `devops` `containers` `docker` `k8s` `kubectl` `configmap` `statefulset` `pvc` `services` `cloud-native` `orchestration`
+---
+
+## Overview
+
+This repo is intentionally small and practical — each manifest demonstrates one concept with minimal extra YAML. Use it to practice kubectl commands, to teach others, or to reference for small demos.
+
+---
+
+## Repository layout
+
+Typical directory structure:
+
+- manifests/
+  - pods/            # single pod examples
+  - deployments/     # Deployment and ReplicaSet examples
+  - services/        # Service examples (ClusterIP, NodePort, LoadBalancer)
+  - init-containers/ # examples using init containers
+  - volumes/         # examples using emptyDir, hostPath, pvc
+- examples/          # higher-level example scenarios
+- scripts/           # helper scripts (local cluster creation, cleanup)
+- README.md
+
+(If your repository differs, adapt the layout section to match your current tree.)
+
+---
+
+## Prerequisites
+
+- kubectl (v1.20+ recommended)
+- A Kubernetes cluster: Minikube, kind, k3d, microk8s, or an existing cloud cluster
+- (Optional) docker or podman to build images locally
+
+---
+
+## Quick start examples
+
+All commands assume your kubectl context is set to the cluster where you want to run these examples.
+
+### Create a simple Pod
+
+Save this as manifests/pods/nginx-pod.yaml:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-demo
+  labels:
+    app: nginx-demo
+spec:
+  containers:
+  - name: nginx
+    image: nginx:stable
+    ports:
+    - containerPort: 80
+```
+
+Apply:
+
+```bash
+kubectl apply -f manifests/pods/nginx-pod.yaml
+kubectl get pods -l app=nginx-demo
+```
+
+Port-forward to test in your browser:
+
+```bash
+kubectl port-forward pod/nginx-demo 8080:80
+# open http://localhost:8080
+```
+
+### Create a Deployment and scale
+
+Deployment manifest (manifests/deployments/nginx-deployment.yaml):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx-deploy
+  template:
+    metadata:
+      labels:
+        app: nginx-deploy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+```
+
+Apply and scale:
+
+```bash
+kubectl apply -f manifests/deployments/nginx-deployment.yaml
+kubectl scale deployment/nginx-deployment --replicas=4
+kubectl get pods -l app=nginx-deploy
+```
+
+### Expose a Deployment with a Service
+
+Service manifest (manifests/services/nginx-service.yaml):
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx-deploy
+  ports:
+  - port: 80
+    targetPort: 80
+  type: ClusterIP
+```
+
+Apply:
+
+```bash
+kubectl apply -f manifests/services/nginx-service.yaml
+kubectl get svc nginx-service
+```
+
+For NodePort:
+
+```bash
+kubectl patch svc/nginx-service -p '{"spec":{"type":"NodePort"}}'
+kubectl get svc nginx-service
+```
+
+---
+
+## Debugging & common commands
+
+Get pod status and detailed events:
+
+```bash
+kubectl get pods
+kubectl describe pod <pod-name>
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
+
+View logs:
+
+```bash
+kubectl logs pod/<pod-name>                 # single container pod
+kubectl logs pod/<pod-name> -c <container>  # multi-container pod
+kubectl logs deployment/<deployment-name>   # logs from one pod (use -l selector and -c)
+```
+
+Execute a shell inside a pod:
+
+```bash
+kubectl exec -it pod/<pod-name> -- /bin/sh
+kubectl exec -it pod/<pod-name> -c <container> -- /bin/bash
+```
+
+Delete and cleanup:
+
+```bash
+kubectl delete -f manifests/pods/nginx-pod.yaml
+kubectl delete deployment nginx-deployment
+kubectl delete svc nginx-service
+```
+
+---
+
+## Best practices & notes
+
+- Keep Pods immutable: use Deployments for managed workloads.
+- Don’t run production workloads as a single Pod without controllers (Deployments/StatefulSets).
+- Always request and limit resources (cpu/memory) in production manifests.
+- Prefer readiness and liveness probes for reliable rollouts.
+- Use labels and selectors consistently for discoverability.
+
+---
+
+## Testing locally
+
+- For lightweight local clusters, use kind or k3d:
+  - kind: https://kind.sigs.k8s.io/
+  - k3d: https://k3d.io/
+- Use `kubectl apply -f` to apply manifests and `kubectl port-forward` to test services locally.
+
+---
+
+## Contributing
+
+Contributions are welcome. Suggested workflow:
+1. Fork the repo.
+2. Create a feature branch: git checkout -b feature/my-example
+3. Add a clear YAML manifest or script in the appropriate folder.
+4. Update README.md if adding a new folder or pattern.
+5. Open a pull request describing what you added and why.
+
+Please follow Kubernetes YAML style and include short explanatory comments in manifests where helpful.
+
+---
+
+## License
+
+This repository is provided under the MIT License. See LICENSE for details.
+
+---
+
+## Contact
+
+Maintainer: Sheersh123
+- GitHub: https://github.com/Sheersh123
+
+If you'd like, I can:
+- commit this README.md to a branch and open a pull request,
+- or push directly to main (if you prefer and provide permission).
