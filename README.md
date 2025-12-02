@@ -246,9 +246,3 @@ Maintainer: Sheersh123
 - GitHub: https://github.com/Sheersh123
 
 ---
-
-Notes
-- I updated the README text and repository layout to match the current structure (the repository organizes examples under the top-level Kubernetes/ directory). If your repository contains additional directories or a different layout, I can further adjust the README to reflect them exactly.
-- I can commit this updated README.md to the repository. Tell me whether you'd like:
-  1) Commit directly to main (push) — I'll update the file on main, or
-  2) Create a new branch and open a pull request (safer for review) — tell me a branch name like update/readme or I'll use update/readme-README-update.
