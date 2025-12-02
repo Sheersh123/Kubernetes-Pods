@@ -1,6 +1,6 @@
 # Kubernetes-Pods
 
-A curated collection of Kubernetes manifests, examples, and learning experiments focused on Pods and basic workload primitives. This repository is intended for developers and learners who want hands-on examples to learn how Pods, Deployments, Services, and basic networking behave in Kubernetes.
+A curated collection of Kubernetes manifests, examples, and learning experiments focused on Pods and other basic workload primitives. This repository is intended for developers and learners who want hands-on examples that demonstrate core Kubernetes concepts using minimal, easy-to-read YAML.
 
 Contents include:
 - simple Pod manifests for single-container workloads
@@ -21,6 +21,7 @@ Table of Contents
   - [Expose a Deployment with a Service](#expose-a-deployment-with-a-service)
 - [Debugging & common commands](#debugging--common-commands)
 - [Best practices & notes](#best-practices--notes)
+- [Testing locally](#testing-locally)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
@@ -29,25 +30,27 @@ Table of Contents
 
 ## Overview
 
-This repo is intentionally small and practical — each manifest demonstrates one concept with minimal extra YAML. Use it to practice kubectl commands, to teach others, or to reference for small demos.
+This repo is intentionally small and practical — each manifest demonstrates one concept with minimal extra YAML. Use it to practice kubectl commands, to teach others, or to reference for small demos and experiments.
 
 ---
 
 ## Repository layout
 
+The repository organizes Kubernetes examples under the top-level Kubernetes directory. Adjust paths below if you add new folders.
+
 Typical directory structure:
 
-- manifests/
+- Kubernetes/
   - pods/            # single pod examples
   - deployments/     # Deployment and ReplicaSet examples
   - services/        # Service examples (ClusterIP, NodePort, LoadBalancer)
   - init-containers/ # examples using init containers
-  - volumes/         # examples using emptyDir, hostPath, pvc
-- examples/          # higher-level example scenarios
+  - volumes/         # examples using emptyDir, hostPath, PVC
 - scripts/           # helper scripts (local cluster creation, cleanup)
 - README.md
+- LICENSE
 
-(If your repository differs, adapt the layout section to match your current tree.)
+If you add new folders, update this README to reflect the new structure.
 
 ---
 
@@ -65,7 +68,7 @@ All commands assume your kubectl context is set to the cluster where you want to
 
 ### Create a simple Pod
 
-Save this as manifests/pods/nginx-pod.yaml:
+Save this as Kubernetes/pods/nginx-pod.yaml:
 
 ```yaml
 apiVersion: v1
@@ -85,7 +88,7 @@ spec:
 Apply:
 
 ```bash
-kubectl apply -f manifests/pods/nginx-pod.yaml
+kubectl apply -f Kubernetes/pods/nginx-pod.yaml
 kubectl get pods -l app=nginx-demo
 ```
 
@@ -98,7 +101,7 @@ kubectl port-forward pod/nginx-demo 8080:80
 
 ### Create a Deployment and scale
 
-Deployment manifest (manifests/deployments/nginx-deployment.yaml):
+Deployment manifest (Kubernetes/deployments/nginx-deployment.yaml):
 
 ```yaml
 apiVersion: apps/v1
@@ -125,14 +128,14 @@ spec:
 Apply and scale:
 
 ```bash
-kubectl apply -f manifests/deployments/nginx-deployment.yaml
+kubectl apply -f Kubernetes/deployments/nginx-deployment.yaml
 kubectl scale deployment/nginx-deployment --replicas=4
 kubectl get pods -l app=nginx-deploy
 ```
 
 ### Expose a Deployment with a Service
 
-Service manifest (manifests/services/nginx-service.yaml):
+Service manifest (Kubernetes/services/nginx-service.yaml):
 
 ```yaml
 apiVersion: v1
@@ -151,11 +154,11 @@ spec:
 Apply:
 
 ```bash
-kubectl apply -f manifests/services/nginx-service.yaml
+kubectl apply -f Kubernetes/services/nginx-service.yaml
 kubectl get svc nginx-service
 ```
 
-For NodePort:
+For NodePort (quick switch):
 
 ```bash
 kubectl patch svc/nginx-service -p '{"spec":{"type":"NodePort"}}'
@@ -192,7 +195,7 @@ kubectl exec -it pod/<pod-name> -c <container> -- /bin/bash
 Delete and cleanup:
 
 ```bash
-kubectl delete -f manifests/pods/nginx-pod.yaml
+kubectl delete -f Kubernetes/pods/nginx-pod.yaml
 kubectl delete deployment nginx-deployment
 kubectl delete svc nginx-service
 ```
@@ -201,7 +204,7 @@ kubectl delete svc nginx-service
 
 ## Best practices & notes
 
-- Keep Pods immutable: use Deployments for managed workloads.
+- Keep Pods immutable: use Deployments or other controllers for managed workloads.
 - Don’t run production workloads as a single Pod without controllers (Deployments/StatefulSets).
 - Always request and limit resources (cpu/memory) in production manifests.
 - Prefer readiness and liveness probes for reliable rollouts.
@@ -223,7 +226,7 @@ kubectl delete svc nginx-service
 Contributions are welcome. Suggested workflow:
 1. Fork the repo.
 2. Create a feature branch: git checkout -b feature/my-example
-3. Add a clear YAML manifest or script in the appropriate folder.
+3. Add a clear YAML manifest or script in the appropriate folder under Kubernetes/.
 4. Update README.md if adding a new folder or pattern.
 5. Open a pull request describing what you added and why.
 
@@ -242,6 +245,10 @@ This repository is provided under the MIT License. See LICENSE for details.
 Maintainer: Sheersh123
 - GitHub: https://github.com/Sheersh123
 
-If you'd like, I can:
-- commit this README.md to a branch and open a pull request,
-- or push directly to main (if you prefer and provide permission).
+---
+
+Notes
+- I updated the README text and repository layout to match the current structure (the repository organizes examples under the top-level Kubernetes/ directory). If your repository contains additional directories or a different layout, I can further adjust the README to reflect them exactly.
+- I can commit this updated README.md to the repository. Tell me whether you'd like:
+  1) Commit directly to main (push) — I'll update the file on main, or
+  2) Create a new branch and open a pull request (safer for review) — tell me a branch name like update/readme or I'll use update/readme-README-update.
