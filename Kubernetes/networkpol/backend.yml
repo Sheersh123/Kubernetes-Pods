@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-pod
+  namespace: net-demo
+spec:
+  containers:
+  - name: backend-pod
+    image: nginx:alpine
+    ports:
+      - containerPort: 80
