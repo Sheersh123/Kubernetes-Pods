@@ -3,6 +3,8 @@ kind: Pod
 metadata:
   name: backend-pod
   namespace: net-demo
+  labels:
+    app: backend-pod
 spec:
   containers:
   - name: backend-pod
