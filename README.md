@@ -1,6 +1,9 @@
-# Kubernetes-Pods
+<!-- Markdown image (simple) -->
+![Kubernetes Pods banner](./assets/banner.svg)
 
-![Kubernetes Pods banner](assets/banner.svg)
+<!-- HTML fallback: allows width/height control and works well on GitHub -->
+<p align="center">
+  <img src="./assets/banner.svg" alt="Kubernetes Pods banner" width="100%" style="max-width:1200px;">
 
 A curated, hands‑on collection of Kubernetes Pod manifests, patterns, and best practices. This repository is focused on Pod-level concepts (single- and multi-container Pods, init containers, lifecycle hooks, volumes, probes, resources, scheduling, and debugging) to help developers, SREs, and educators quickly learn, test, and adopt production‑ready Pod configurations.
 
