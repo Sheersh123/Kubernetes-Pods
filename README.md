@@ -1,248 +1,310 @@
 # Kubernetes-Pods
 
-A curated collection of Kubernetes manifests, examples, and learning experiments focused on Pods and other basic workload primitives. This repository is intended for developers and learners who want hands-on examples that demonstrate core Kubernetes concepts using minimal, easy-to-read YAML.
+![Kubernetes Pods banner](assets/banner.svg)
 
-Contents include:
-- simple Pod manifests for single-container workloads
-- Deployments and ReplicaSets showing rolling updates and scaling
-- Service examples (ClusterIP, NodePort, LoadBalancer)
-- Practical tips for debugging (kubectl exec, logs, port-forward)
-- Scripts and helper manifests used for demonstrations
+A curated, hands‑on collection of Kubernetes Pod manifests, patterns, and best practices. This repository is focused on Pod-level concepts (single- and multi-container Pods, init containers, lifecycle hooks, volumes, probes, resources, scheduling, and debugging) to help developers, SREs, and educators quickly learn, test, and adopt production‑ready Pod configurations.
 
----
+Table of contents
+- About
+- Who this is for
+- Repository layout
+- Quick start (apply an example)
+- Detailed examples (what's included & why)
+- Common workflows and commands
+- Best practices & guidance
+- Converting Pods to higher-level controllers
+- Testing & local development (minikube / kind / k3s)
+- Contributing guide
+- Troubleshooting & FAQ
+- License & contact
+- Useful references
 
-Table of Contents
-- [Overview](#overview)
-- [Repository layout](#repository-layout)
-- [Prerequisites](#prerequisites)
-- [Quick start examples](#quick-start-examples)
-  - [Create a simple Pod](#create-a-simple-pod)
-  - [Create a Deployment and scale](#create-a-deployment-and-scale)
-  - [Expose a Deployment with a Service](#expose-a-deployment-with-a-service)
-- [Debugging & common commands](#debugging--common-commands)
-- [Best practices & notes](#best-practices--notes)
-- [Testing locally](#testing-locally)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+About
+-----
+Kubernetes Pods are the smallest deployable units in Kubernetes. This repo provides small, well-documented manifests that demonstrate Pod patterns and practical configurations you can use directly or adapt for real workloads.
 
----
+Who this is for
+---------------
+- Developers learning how Pods work (lifecycle, startup order, volumes).
+- SREs and platform engineers experimenting with Pod-level patterns before recommending controllers.
+- Instructors preparing concise, focused examples for talks or labs.
+- Anyone wanting Pod-focused examples without the complexity of Deployments/StatefulSets.
 
-## Overview
-
-This repo is intentionally small and practical — each manifest demonstrates one concept with minimal extra YAML. Use it to practice kubectl commands, to teach others, or to reference for small demos and experiments.
-
----
-
-## Repository layout
-
-The repository organizes Kubernetes examples under the top-level Kubernetes directory. Adjust paths below if you add new folders.
-
-Typical directory structure:
-
-- Kubernetes/
-  - pods/            # single pod examples
-  - deployments/     # Deployment and ReplicaSet examples
-  - services/        # Service examples (ClusterIP, NodePort, LoadBalancer)
-  - init-containers/ # examples using init containers
-  - volumes/         # examples using emptyDir, hostPath, PVC
-- scripts/           # helper scripts (local cluster creation, cleanup)
+Repository layout
+----------------
+- assets/
+  - banner.svg                         # Repository banner and other assets
+- manifests/
+  - simple/
+    - simple-pod.yaml                  # Minimal single container Pod
+  - multi-container/
+    - sidecar-pod.yaml                 # App + sidecar pattern
+  - init-containers/
+    - init-example.yaml                # Init container examples
+  - volumes/
+    - emptydir-pod.yaml
+    - hostpath-pod.yaml
+    - pvc-pod.yaml
+  - probes/
+    - probes-http-pod.yaml
+    - probes-exec-pod.yaml
+  - resources/
+    - resource-requests-limits.yaml
+  - scheduling/
+    - node-selector-pod.yaml
+    - affinity-pod.yaml
+  - networking/
+    - pod-service.yaml
+- scripts/                              # Optional helper scripts (build, load image)
 - README.md
 - LICENSE
 
-If you add new folders, update this README to reflect the new structure.
+Quick start
+-----------
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Sheersh123/Kubernetes-Pods.git
+   cd Kubernetes-Pods
+   ```
 
----
+2. Start a local cluster (examples)
+   - minikube:
+     ```bash
+     minikube start
+     ```
+   - kind:
+     ```bash
+     kind create cluster --name kp-cluster
+     ```
+   - k3s: follow your preferred installer
 
-## Prerequisites
+3. Apply a simple Pod manifest:
+   ```bash
+   kubectl apply -f manifests/simple/simple-pod.yaml
+   kubectl get pods --all-namespaces
+   ```
 
-- kubectl (v1.20+ recommended)
-- A Kubernetes cluster: Minikube, kind, k3d, microk8s, or an existing cloud cluster
-- (Optional) docker or podman to build images locally
+4. Inspect:
+   ```bash
+   kubectl describe pod simple-pod
+   kubectl logs simple-pod
+   kubectl exec -it simple-pod -- /bin/sh
+   ```
 
----
+Detailed examples included
+--------------------------
+Each folder under manifests/ contains small, focused examples. Every manifest includes comments explaining each field and why it's used.
 
-## Quick start examples
+1) Simple Pod (manifests/simple/simple-pod.yaml)
+   - Minimal Pod manifest demonstrating metadata, labels, and a single container.
+   - Good starting point for kubectl apply and inspect.
 
-All commands assume your kubectl context is set to the cluster where you want to run these examples.
+2) Multi-container Pod / Sidecar (manifests/multi-container/sidecar-pod.yaml)
+   - Demonstrates the sidecar pattern: primary app container + helper container (e.g., logger, proxy).
+   - Shows shared volumes and why containers share the same network / PID namespace (if enabled).
 
-### Create a simple Pod
+3) Init Containers (manifests/init-containers/init-example.yaml)
+   - Demonstrates init containers that run to completion before main containers start.
+   - Use cases: waiting for external dependency, seeding configuration, altering filesystem permissions.
 
-Save this as Kubernetes/pods/nginx-pod.yaml:
+4) Volumes
+   - emptyDir (ephemeral storage for a Pod lifecycle)
+   - hostPath (bind host storage — *use with caution*)
+   - PVC + StorageClass (persistent storage example and mounting)
+   Files: manifests/volumes/{emptydir-pod.yaml, hostpath-pod.yaml, pvc-pod.yaml}
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx-demo
-  labels:
-    app: nginx-demo
-spec:
-  containers:
-  - name: nginx
-    image: nginx:stable
-    ports:
-    - containerPort: 80
-```
+5) Probes (Liveness & Readiness)
+   - Example of HTTP, TCP, and Exec probes.
+   - Documents initialDelaySeconds, periodSeconds, failureThreshold to avoid false positives.
+   Files: manifests/probes/{probes-http-pod.yaml, probes-exec-pod.yaml}
 
-Apply:
+6) Resource Requests & Limits
+   - Recommended patterns for requests and limits to help scheduler and QoS classification.
+   File: manifests/resources/resource-requests-limits.yaml
 
-```bash
-kubectl apply -f Kubernetes/pods/nginx-pod.yaml
-kubectl get pods -l app=nginx-demo
-```
+7) Scheduling (nodeSelector, nodeAffinity, podAffinity/antiAffinity)
+   - Examples for pinning Pods to specific nodes or topology domains.
+   Files: manifests/scheduling/{node-selector-pod.yaml, affinity-pod.yaml}
 
-Port-forward to test in your browser:
+8) Networking & Exposure
+   - How to expose a Pod using a Service (ClusterIP/NodePort/LoadBalancer) and port-forward examples.
+   File: manifests/networking/pod-service.yaml
 
-```bash
-kubectl port-forward pod/nginx-demo 8080:80
-# open http://localhost:8080
-```
+Common kubectl commands & workflows
+----------------------------------
+- Apply a manifest:
+  ```bash
+  kubectl apply -f manifests/<path-to-file>.yaml
+  ```
+- Delete:
+  ```bash
+  kubectl delete -f manifests/<path-to-file>.yaml
+  ```
+- Get pods:
+  ```bash
+  kubectl get pods -o wide
+  ```
+- Describe (events, scheduling details):
+  ```bash
+  kubectl describe pod <pod-name>
+  ```
+- Logs:
+  ```bash
+  kubectl logs <pod-name>
+  kubectl logs <pod-name> -c <container-name>
+  ```
+- Exec:
+  ```bash
+  kubectl exec -it <pod-name> -c <container-name> -- /bin/sh
+  ```
+- Port forwarding:
+  ```bash
+  kubectl port-forward pod/<pod-name> 8080:80
+  ```
+- Watch resource changes:
+  ```bash
+  kubectl get pods -w
+  ```
 
-### Create a Deployment and scale
+Best practices
+--------------
+- Keep containers in the same Pod tightly coupled (shared lifecycle, storage).
+- Prefer higher-level controllers (Deployment, StatefulSet) in production for replicas and rolling updates.
+- Always set resource requests and limits for predictable scheduling.
+- Use readiness probes to avoid sending traffic to non-ready Pods.
+- Use liveness probes to recover unhealthy containers automatically.
+- Avoid hostPath unless absolutely necessary (security risks).
+- Use explicit image tags (avoid :latest) and immutable images for production.
+- Use RBAC to limit what Pods (via ServiceAccounts) can do.
+- Plan storage carefully: emptyDir is ephemeral; use PVCs for persistence.
 
-Deployment manifest (Kubernetes/deployments/nginx-deployment.yaml):
+Converting Pod manifests to controllers
+--------------------------------------
+Pods are ephemeral and don't provide replicas or rolling updates. To run Pods in production, convert to a Deployment or StatefulSet:
 
+Example: simple Pod -> Deployment
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: simple-deployment
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
-      app: nginx-deploy
+      app: simple
   template:
     metadata:
       labels:
-        app: nginx-deploy
+        app: simple
     spec:
       containers:
       - name: nginx
-        image: nginx:stable
+        image: nginx:1.25-alpine
         ports:
         - containerPort: 80
 ```
 
-Apply and scale:
+Testing & local development tips
+-------------------------------
+- kind: to test local images created with Docker on the host:
+  ```bash
+  docker build -t myimage:dev .
+  kind load docker-image myimage:dev --name kp-cluster
+  ```
+- minikube: to access services using minikube service:
+  ```bash
+  minikube service <service-name>
+  ```
+- Use imagePullPolicy: If you're iterating with local images, set imagePullPolicy: IfNotPresent or Never accordingly.
+- Use small reproducible images (busybox, curl) in examples to speed up tests.
+- Use scripts/ to automate building and loading images; add a README in scripts/ documenting usage.
 
-```bash
-kubectl apply -f Kubernetes/deployments/nginx-deployment.yaml
-kubectl scale deployment/nginx-deployment --replicas=4
-kubectl get pods -l app=nginx-deploy
-```
+Contributing
+------------
+We welcome contributions of new examples, improvements to existing manifests, and clearer documentation.
 
-### Expose a Deployment with a Service
+How to contribute:
+1. Fork the repository.
+2. Create a feature branch: git checkout -b feat/<short-description>
+3. Add/modify manifests or docs in the appropriate folder under manifests/.
+4. Add a short README or comments if your example requires context.
+5. Run basic sanity checks on a cluster locally (minikube/kind).
+6. Create a Pull Request with a clear description of what you changed and why.
 
-Service manifest (Kubernetes/services/nginx-service.yaml):
+Contributor guidelines:
+- Keep examples small and focused (one concept per manifest).
+- Add comments in YAML when something might be surprising.
+- Use descriptive filenames: manifests/<category>/<what-it-demonstrates>.yaml
+- If adding images you build locally, include Dockerfile or links to public images.
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-service
-spec:
-  selector:
-    app: nginx-deploy
-  ports:
-  - port: 80
-    targetPort: 80
-  type: ClusterIP
-```
+Troubleshooting & FAQ
+---------------------
+Q: Pod stays in ImagePullBackOff or ErrImagePull
+A:
+- Check kubectl describe pod <pod>
+- Verify image name and registry credentials (imagePullSecrets)
+- Ensure cluster nodes have network access to the registry
 
-Apply:
+Q: Pod is Pending
+A:
+- kubectl describe pod shows scheduling messages: insufficient CPU/memory or node selectors mismatched.
+- Check nodes with kubectl get nodes -o wide and resource usage.
 
-```bash
-kubectl apply -f Kubernetes/services/nginx-service.yaml
-kubectl get svc nginx-service
-```
+Q: Init container hangs / fails
+A:
+- View init container logs: kubectl logs <pod> -c <init-container-name>
+- Ensure termination conditions for init container succeed before main containers start.
 
-For NodePort (quick switch):
+Q: Liveness probe keeps restarting containers
+A:
+- Check probe path, port, and timings. Increase initialDelaySeconds to give app more startup time.
 
-```bash
-kubectl patch svc/nginx-service -p '{"spec":{"type":"NodePort"}}'
-kubectl get svc nginx-service
-```
+FAQ: Where are Deployments and other controllers?
+- This repo emphasizes Pod-level learning. If you want conversion examples to Deployments/StatefulSets, check the "Converting Pods to controllers" section or open an issue to request examples.
 
----
+Security considerations
+-----------------------
+- Avoid running containers as root unless necessary — prefer securityContext to set runAsUser and drop capabilities.
+- Limit volumes (hostPath) usage and consider Pod Security Policies / OPA / Gatekeeper for enforcing constraints.
+- Review image provenance and scanning results for container images in production.
 
-## Debugging & common commands
+Repository maintenance & roadmap
+-------------------------------
+Planned improvements:
+- Add common real-world examples (sidecar for log forwarding, init container DB migrations).
+- Add small HOWTOs for converting Pod examples to Deployments, Jobs and CronJobs.
+- Add GitHub Actions workflow to validate YAML manifests (kubeval/kube-lint).
+If you'd like to help with any item, open an issue and tag it with the appropriate label.
 
-Get pod status and detailed events:
+License
+-------
+This repository is available under the MIT License. See LICENSE for full terms.
 
-```bash
-kubectl get pods
-kubectl describe pod <pod-name>
-kubectl get events --sort-by=.metadata.creationTimestamp
-```
+Acknowledgements & credits
+--------------------------
+- Inspired by official Kubernetes docs and common community examples.
+- Banner created for the repository (assets/banner.svg).
 
-View logs:
-
-```bash
-kubectl logs pod/<pod-name>                 # single container pod
-kubectl logs pod/<pod-name> -c <container>  # multi-container pod
-kubectl logs deployment/<deployment-name>   # logs from one pod (use -l selector and -c)
-```
-
-Execute a shell inside a pod:
-
-```bash
-kubectl exec -it pod/<pod-name> -- /bin/sh
-kubectl exec -it pod/<pod-name> -c <container> -- /bin/bash
-```
-
-Delete and cleanup:
-
-```bash
-kubectl delete -f Kubernetes/pods/nginx-pod.yaml
-kubectl delete deployment nginx-deployment
-kubectl delete svc nginx-service
-```
-
----
-
-## Best practices & notes
-
-- Keep Pods immutable: use Deployments or other controllers for managed workloads.
-- Don’t run production workloads as a single Pod without controllers (Deployments/StatefulSets).
-- Always request and limit resources (cpu/memory) in production manifests.
-- Prefer readiness and liveness probes for reliable rollouts.
-- Use labels and selectors consistently for discoverability.
-
----
-
-## Testing locally
-
-- For lightweight local clusters, use kind or k3d:
-  - kind: https://kind.sigs.k8s.io/
-  - k3d: https://k3d.io/
-- Use `kubectl apply -f` to apply manifests and `kubectl port-forward` to test services locally.
-
----
-
-## Contributing
-
-Contributions are welcome. Suggested workflow:
-1. Fork the repo.
-2. Create a feature branch: git checkout -b feature/my-example
-3. Add a clear YAML manifest or script in the appropriate folder under Kubernetes/.
-4. Update README.md if adding a new folder or pattern.
-5. Open a pull request describing what you added and why.
-
-Please follow Kubernetes YAML style and include short explanatory comments in manifests where helpful.
-
----
-
-## License
-
-This repository is provided under the MIT License. See LICENSE for details.
-
----
-
-## Contact
-
+Contact / Maintainer
+--------------------
 Maintainer: Sheersh123
-- GitHub: https://github.com/Sheersh123
+GitHub: https://github.com/Sheersh123
 
----
+If you need help converting Pod examples into Deployments or want custom examples for a use case (databases, sidecars, init workflows), open an issue describing your scenario.
+
+Useful references
+-----------------
+- Official Kubernetes docs — Pods: https://kubernetes.io/docs/concepts/workloads/pods/
+- Probes tutorial: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+- Volumes: https://kubernetes.io/docs/concepts/storage/volumes/
+- Best practices: https://kubernetes.io/docs/setup/best-practices/
+
+Changelog
+---------
+See commit history for changes. If you add a substantial example or change semantics, include a short note in the top of the modified manifest or create a CHANGELOG.md entry.
+
+Enjoy experimenting and learning with Pods! If you want, I can:
+- Add GitHub Actions that validate YAML and run kubeval.
+- Convert a few core Pod examples into Deployments/StatefulSets and add side-by-side comparisons.
+- Generate a PDF/markdown cheat sheet of common kubectl commands from the docs above.
